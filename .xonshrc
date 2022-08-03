@@ -137,11 +137,6 @@ def _free(args, stdin=None):
     return [i for i in disk_info.splitlines() if "Free" in i][0] + '\n'
 aliases['fr'] = _free
 
-# gc
-import gc
-def _gc(args, stdin=None):
-    gc.collect()
-aliases['gc'] = _gc
 
 # ライブラリの実行時import
 # https://vaaaaaanquish.hatenablog.com/entry/2017/12/26/190153

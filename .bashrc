@@ -8,7 +8,7 @@ if [[ $- =~ i ]]; then
     export PGDATA="/usr/local/var/postgres"
     export PYENV_ROOT="/usr/local/var/pyenv"
     export PATH="$PYENV_ROOT/bin:$PATH"
-    export GOPATH="$HOME/go"
+
     # export PATH="${HOME}/.pyenv/shims:${PATH}"
     # PEPENV
     export PIPENV_VENV_IN_PROJECT=true
