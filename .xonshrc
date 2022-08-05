@@ -40,57 +40,5 @@ $PROMPT = "{INTENSE_RED}{user}{INTENSE_GREEN}@{INTENSE_BLUE}{hostname}{INTENSE_Y
 $LS_COLORS="di=34:ln=35:so=32:pi=33:ex=31:bd=46;34:cd=43;34:su=41;30:sg=46;30:tw=42;30:ow=43;30"
 
 # alias
-# OS判別をplatformで
-import platform
-if platform.system() == 'Darwin':
-    # Mac(iTerm2のimgcat)
-    aliases['icat'] = 'imgcat'
-else:
-    aliases['f'] = 'free -h'
-    aliases['wf'] = 'watch free -h'
-    aliases['tm'] = 'tmux'
-aliases['ls'] = "ls -G"
-aliases["l"] = "ls -l"
-aliases["lf"] = "ls -f"
-aliases["ld"] = "ls -d"
 aliases["la"] = "ls -la"
 aliases["ll"] = "ls -l"
-
-
-# 直近のxonshjobころすマン
-# https://github.com/zardus/xonshrc/blob/master/xonshrc
-def _kill_last(args, stdin=None):
-    if __xonsh_active_job__ is None:
-        print("No active job. Aborting.")
-        return
-    cmd = 'kill %s %d' % (''.join(args), __xonsh_all_jobs__[__xonsh_active_job__]['pgrp'])
-    os.system(cmd)
-aliases['kill_last'] = _kill_last
-
-# diskutil infoを見る
-# https://github.com/asmeurer/dotfiles/blob/master/.xonshrc
-def _free(args, stdin=None):
-    disk_info = $(diskutil info /)
-    return [i for i in disk_info.splitlines() if "Free" in i][0] + '\n'
-aliases['fr'] = _free
-
-
-# ライブラリの実行時import
-# https://vaaaaaanquish.hatenablog.com/entry/2017/12/26/190153
-# xonsh上で使うときがありそうなライブラリはlazyasdで補完時、実行時に読み込み
-from xonsh.lazyasd import lazyobject
-import importlib
-lazy_module_dict = {
-    'sys': 'sys',
-    'random': 'random',
-    'shutil': 'shutil',
-    'pd': 'pandas',
-    'np': 'numpy',
-    'requests': 'requests',
-    'os': 'os',
-    'plt': 'matplotlib.pyplot',
-    'Path': 'pathlib.Path',
-}
-for k,v in lazy_module_dict.items():
-    t = "@lazyobject\ndef {}():\n    return importlib.import_module('{}')".format(k, v)
-    exec(t)
