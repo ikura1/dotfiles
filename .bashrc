@@ -4,21 +4,21 @@ if [ -f /etc/bashrc ]; then
 fi
 
 if [[ $- =~ i ]]; then
-    export PATH="${HOME}/local/bin:${PATH}"
+    export PATH="$HOME/.local/bin:$PATH"
     export PGDATA="/usr/local/var/postgres"
-    export PYENV_ROOT="/usr/local/var/pyenv"
-    export PATH="$PYENV_ROOT/bin:$PATH"
-
-    # export PATH="${HOME}/.pyenv/shims:${PATH}"
-    # PEPENV
-    export PIPENV_VENV_IN_PROJECT=true
 
     # pyenv
     export PYENV_ROOT="$HOME/.pyenv"
     export PATH="$PYENV_ROOT/bin:$PATH"
     eval "$(pyenv init -)"
 
+    # PEPENV
+    export PIPENV_VENV_IN_PROJECT=true
+
+    # poetry
+    export POETRY_HOME="~/.local/share/pypoetry/venv/bin/poetry"
+
+    xonsh
+
 fi
 echo ".bashrc loaded"
-
-xonsh
