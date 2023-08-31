@@ -9,7 +9,7 @@ if [[ $- =~ i ]]; then
 
     # pyenv
     export PYENV_ROOT="$HOME/.pyenv"
-    export PATH="$PYENV_ROOT/bin:$PATH"
+    command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
     eval "$(pyenv init -)"
 
     # PEPENV
@@ -18,7 +18,11 @@ if [[ $- =~ i ]]; then
     # poetry
     export POETRY_HOME="~/.local/share/pypoetry/venv/bin/poetry"
 
-    xonsh
+    # rye
+    eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+    source "$HOME/.rye/env"
+
+    # xonsh
 
 fi
 echo ".bashrc loaded"
