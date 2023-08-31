@@ -10,7 +10,7 @@ setopt IGNOREEOF
 export LANG=ja_JP.UTF-8
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
 autoload -Uz colors
-# colors
+colors
 
 alias l='ls -ltr --color=auto'
 alias ls='ls --color=auto'
