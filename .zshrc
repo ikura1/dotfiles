@@ -122,6 +122,16 @@ alias mk='make'
 alias dc='docker-compose'
 alias k='kubectl'
 
+# UV Python package manager aliases
+alias uvi='uv init'
+alias uvr='uv run'
+alias uva='uv add'
+alias uvs='uv sync'
+alias uvl='uv lock'
+alias uvt='uv tool'
+alias uvp='uv python'
+alias uvc='uv cache'
+
 # Network and system
 alias ports='netstat -tulanp'
 alias ping='ping -c 5'
@@ -166,6 +176,29 @@ extract() {
 # Find files by name
 ff() {
     find . -name "*$1*" 2>/dev/null
+}
+
+# UV Python project functions
+uvnew() {
+    if [ -z "$1" ]; then
+        echo "Usage: uvnew <project_name>"
+        return 1
+    fi
+    uv init "$1" && cd "$1"
+}
+
+# UV virtual environment activation
+uvenv() {
+    if [ -f "pyproject.toml" ]; then
+        source .venv/bin/activate
+    else
+        echo "No pyproject.toml found. Run 'uv init' first."
+    fi
+}
+
+# UV dependency management helper
+uvdev() {
+    uv add --dev "$@"
 }
 
 # ===========================
@@ -218,6 +251,13 @@ export PYENV_ROOT="$HOME/.pyenv"
 if command -v pyenv >/dev/null; then
     export PATH="$PYENV_ROOT/bin:$PATH"
     eval "$(pyenv init -)"
+fi
+
+# UV - Python package and project manager
+if [ -f "$HOME/.cargo/bin/uv" ]; then
+    export PATH="$HOME/.cargo/bin:$PATH"
+    export UV_CACHE_DIR="$HOME/.cache/uv"
+    export UV_CONFIG_FILE="$HOME/.config/uv/uv.toml"
 fi
 
 # Node.js environment (Volta)

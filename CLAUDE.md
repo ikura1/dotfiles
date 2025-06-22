@@ -15,6 +15,7 @@ This is a personal dotfiles repository containing shell and editor configuration
 
 ### Dependencies
 - Python 3 with pip
+- uv - Modern Python package and project manager
 - pyenv for Python version management
 - Volta for Node.js management
 - pnpm for package management
@@ -43,6 +44,7 @@ This is a personal dotfiles repository containing shell and editor configuration
 - Directory auto-completion and navigation shortcuts
 
 ### Development Tools Integration
+- uv for modern Python package and project management with aliases and helper functions
 - pyenv for Python version management across all shells
 - pnpm configured for package management
 - Cargo/Rust environment integration
@@ -59,8 +61,9 @@ This is a personal dotfiles repository containing shell and editor configuration
 ### Zsh Configuration Highlights
 - Enhanced history management (10,000 entries, deduplication)
 - Comprehensive alias collection for Git, development, and system operations
+- UV Python package manager integration with aliases (uvi, uvr, uva, uvs, etc.)
 - Advanced prompt with Git status and Python environment display
-- Useful functions (mkcd, extract, ff for file finding)
+- Useful functions (mkcd, extract, ff for file finding, uvnew, uvenv, uvdev)
 - Improved key bindings and auto-completion
 - Plugin support for syntax highlighting and auto-suggestions
 - Performance optimizations with lazy loading
