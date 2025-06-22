@@ -19,18 +19,24 @@ PROMPT="%(?.%{${fg[red]}%}.%{${fg[red]}%})%n${reset_color}@${fg[blue]}%m${reset_
 
 # local
 export PATH="${HOME}/.local/bin:${PATH}"
+export PGDATA="/usr/local/var/postgres"
 
 # pyenv
 export PYENV_ROOT="$HOME/.pyenv"
 command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
 eval "$(pyenv init -)"
 
-# poetry
-export POETRY_HOME="~/.local/share/pypoetry/venv/bin/poetry"
+# volta
+export VOLTA_HOME="$HOME/.volta"
+export PATH="$VOLTA_HOME/bin:$PATH"
 
-# PEPENV
-export PIPENV_VENV_IN_PROJECT=true
+# pnpm
+export PNPM_HOME="/home/ikura1/.local/share/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME:"*) ;;
+  *) export PATH="$PNPM_HOME:$PATH" ;;
+esac
+# pnpm end
 
-# xonsh起動
-alias x='xonsh'
-# x
+# cargo
+. "$HOME/.cargo/env"
