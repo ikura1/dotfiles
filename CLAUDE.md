@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repository Overview
 
-This is a personal dotfiles repository containing shell and editor configuration files. The repository manages configuration for multiple shells (bash, zsh, xonsh) and Emacs editor.
+This is a personal dotfiles repository containing shell and editor configuration files. The repository manages configuration for multiple shells (bash, zsh) and Emacs editor.
 
 ## Installation and Setup
 
@@ -15,7 +15,6 @@ This is a personal dotfiles repository containing shell and editor configuration
 
 ### Dependencies
 - Python 3 with pip
-- xonsh shell (installed via pip during setup)
 - pyenv for Python version management
 - Volta for Node.js management
 - pnpm for package management
@@ -25,8 +24,7 @@ This is a personal dotfiles repository containing shell and editor configuration
 
 ### Shell Configurations
 - `.bashrc` - Bash configuration with PATH setup and tool initialization
-- `.zshrc` - Zsh configuration with minimal setup, aliases, and prompt customization
-- `.xonshrc` - Xonsh shell configuration with Python-style settings and prompt
+- `.zshrc` - Enhanced Zsh configuration with comprehensive aliases, functions, and prompt customization
 
 ### Editor Configuration
 - `.emacs.el` - Emacs configuration with custom key bindings, visual settings, and whitespace highlighting
@@ -58,14 +56,11 @@ This is a personal dotfiles repository containing shell and editor configuration
 
 ## Shell-Specific Notes
 
-### Xonsh Configuration Highlights
-- Interactive completions with keypress updates
-- Auto-completion for directory navigation
-- Comprehensive error reporting and logging
-- Custom prompt with color coding for user/host/directory
-
 ### Zsh Configuration Highlights
-- Minimal setup focused on essential features
-- Auto-completion with case-insensitive matching
-- Directory navigation with auto_cd and pushd management
-- Custom prompt with color-coded status indication
+- Enhanced history management (10,000 entries, deduplication)
+- Comprehensive alias collection for Git, development, and system operations
+- Advanced prompt with Git status and Python environment display
+- Useful functions (mkcd, extract, ff for file finding)
+- Improved key bindings and auto-completion
+- Plugin support for syntax highlighting and auto-suggestions
+- Performance optimizations with lazy loading
