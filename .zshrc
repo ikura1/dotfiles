@@ -209,18 +209,18 @@ uvdev() {
 git_prompt_info() {
     if git rev-parse --git-dir > /dev/null 2>&1; then
         local branch=$(git branch 2>/dev/null | grep '^*' | colrm 1 2)
-        local status=""
+        local git_status=""
         
         # Check for uncommitted changes
         if ! git diff --quiet 2>/dev/null; then
-            status="%{$fg[red]%}✗%{$reset_color%}"
+            git_status="%{$fg[red]%}✗%{$reset_color%}"
         elif ! git diff --cached --quiet 2>/dev/null; then
-            status="%{$fg[yellow]%}✓%{$reset_color%}"
+            git_status="%{$fg[yellow]%}✓%{$reset_color%}"
         else
-            status="%{$fg[green]%}✓%{$reset_color%}"
+            git_status="%{$fg[green]%}✓%{$reset_color%}"
         fi
         
-        echo " %{$fg[cyan]%}(%{$fg[yellow]%}$branch%{$fg[cyan]%}$status%{$fg[cyan]%})"
+        echo " %{$fg[cyan]%}(%{$fg[yellow]%}$branch%{$fg[cyan]%}$git_status%{$fg[cyan]%})"
     fi
 }
 
