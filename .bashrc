@@ -1,4 +1,3 @@
-echo ".bashrc load"
 if [ -f /etc/bashrc ]; then
     . /etc/bashrc
 fi
@@ -9,20 +8,28 @@ if [[ $- =~ i ]]; then
 
     # pyenv
     export PYENV_ROOT="$HOME/.pyenv"
-    command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
-    eval "$(pyenv init -)"
-
-    # PEPENV
-    export PIPENV_VENV_IN_PROJECT=true
-
-    # poetry
-    export POETRY_HOME="~/.local/share/pypoetry/venv/bin/poetry"
-
-    # rye
-    eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-    source "$HOME/.rye/env"
-
-    # xonsh
+    if command -v pyenv >/dev/null; then
+        export PATH="$PYENV_ROOT/bin:$PATH"
+        eval "$(pyenv init -)"
+    fi
 
 fi
-echo ".bashrc loaded"
+
+# Volta (Node.js version manager)
+export VOLTA_HOME="$HOME/.volta"
+if [ -d "$VOLTA_HOME" ]; then
+    export PATH="$VOLTA_HOME/bin:$PATH"
+fi
+
+# pnpm
+export PNPM_HOME="/home/ikura1/.local/share/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME:"*) ;;
+  *) export PATH="$PNPM_HOME:$PATH" ;;
+esac
+# pnpm end
+
+# Rust environment
+if [ -f "$HOME/.cargo/env" ]; then
+    . "$HOME/.cargo/env"
+fi
