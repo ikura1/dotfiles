@@ -33,3 +33,7 @@ esac
 if [ -f "$HOME/.cargo/env" ]; then
     . "$HOME/.cargo/env"
 fi
+
+. "$HOME/.local/bin/env"
+export PATH="/home/ikura1/.npm-global/bin:$PATH"
+alias gemini="/home/ikura1/.npm-global/bin/gemini"
