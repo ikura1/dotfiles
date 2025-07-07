@@ -1,69 +1,101 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+このファイルは、Claude Code (claude.ai/code) がこのリポジトリのコードを操作する際のガイダンスを提供します。
 
-## Repository Overview
+## リポジトリ概要
 
-This is a personal dotfiles repository containing shell and editor configuration files. The repository manages configuration for multiple shells (bash, zsh) and Emacs editor.
+これは、シェルとエディタの設定ファイルを含む個人的なdotfilesリポジトリです。このリポジトリは、複数のシェル（bash、zsh）とEmacsエディタの設定を管理します。
 
-## Installation and Setup
+## 共通コマンド
 
-### Installing Dotfiles
-- Use `make install` or `./install.sh` to install dotfiles
-- The install script creates symlinks from home directory to the dotfiles in this repo
-- Requires sudo access for package installation (apt update, pip install)
+### セットアップとインストール
+- `./install.sh` - ホームディレクトリからリポジトリファイルへのシンボリックリンクを作成してdotfilesをインストール
+- パッケージインストール（apt update、pip install）にはsudoアクセスが必要
 
-### Dependencies
+### Claudeコマンド
+このリポジトリには `.claude-commands/` に配置されたカスタムClaudeコマンドが含まれています：
+- `/commit` - 従来型コミットメッセージと絵文字を使用した整形済みコミットの作成
+- `/review-branch` - 複数の視点（PM、開発者、QA、セキュリティ、DevOps、UI/UX）からの包括的ブランチレビュー
+- カスタムコマンドはインストール時に `~/.claude/commands/` に同期されます
+
+## インストールとセットアップ
+
+### dotfilesのインストール
+- `./install.sh` を使用してdotfilesをインストールします
+- インストールスクリプトはホームディレクトリからこのリポジトリのdotfilesへのシンボリックリンクを作成します
+- パッケージインストール（apt update、pip install）にはsudoアクセスが必要です
+
+### 依存関係
 - Python 3 with pip
-- uv - Modern Python package and project manager
-- pyenv for Python version management
-- Volta for Node.js management
-- pnpm for package management
-- Rust/Cargo environment
+- uv - モダンなPythonパッケージおよびプロジェクトマネージャー
+- pyenv - Pythonバージョン管理用
+- Volta - Node.js管理用
+- pnpm - パッケージ管理用
+- Rust/Cargo環境
 
-## Configuration Files Structure
+## 設定ファイル構造
 
-### Shell Configurations
-- `.bashrc` - Bash configuration with PATH setup and tool initialization
-- `.zshrc` - Enhanced Zsh configuration with comprehensive aliases, functions, and prompt customization
+### シェル設定
+- `.bashrc` - PATHセットアップとツール初期化を含むBash設定
+- `.zshrc` - 包括的なエイリアス、関数、プロンプトカスタマイゼーションを含む拡張Zsh設定
 
-### Editor Configuration
-- `.emacs.el` - Emacs configuration with custom key bindings, visual settings, and whitespace highlighting
+### エディタ設定
+- `.emacs.el` - カスタムキーバインディング、視覚的設定、空白ハイライトを含むEmacs設定
 
-### Environment Setup
-- `.python-version` - Contains "system" indicating use of system Python
-- `.gitignore` - Ignores VS Code settings and Emacs temporary files
+### 環境セットアップ
+- `.python-version` - システムPythonの使用を示す「system」を含む
+- `.gitignore` - VS Code設定とEmacs一時ファイルを無視
 
-## Key Features
+## 主な機能
 
-### Shell Environment
-- All shells configured with pyenv integration for Python version management
-- Volta integration for Node.js/npm management
-- Rust/Cargo environment loading
-- Custom aliases and prompts for each shell
-- Directory auto-completion and navigation shortcuts
+### シェル環境
+- すべてのシェルがPythonバージョン管理用のpyenv統合で設定されています
+- Node.js/npm管理用のVolta統合
+- Rust/Cargo環境の読み込み
+- 各シェル用のカスタムエイリアスとプロンプト
+- ディレクトリ自動補完とナビゲーションショートカット
 
-### Development Tools Integration
-- uv for modern Python package and project management with aliases and helper functions
-- pyenv for Python version management across all shells
-- pnpm configured for package management
-- Cargo/Rust environment integration
-- Local bin directory in PATH for user-installed tools
+### 開発ツール統合
+- エイリアスとヘルパー関数を含む、モダンなPythonパッケージとプロジェクト管理用のuv
+- すべてのシェルにおけるPythonバージョン管理用のpyenv
+- パッケージ管理用に設定されたpnpm
+- Cargo/Rust環境統合
+- ユーザーインストールツール用のローカルbinディレクトリのPATH
 
-### Editor Setup
-- Emacs configured for terminal use (`emacs -nw` alias)
-- Custom key bindings (C-h for backspace, C-/ for undo)
-- Visual enhancements (line highlighting, bracket matching, custom colors)
-- Whitespace and full-width space highlighting for better code formatting
+### エディタセットアップ
+- ターミナル使用用に設定されたEmacs（`emacs -nw`エイリアス）
+- カスタムキーバインディング（バックスペース用C-h、アンドゥ用C-/）
+- 視覚的拡張（行ハイライト、括弧マッチング、カスタムカラー）
+- より良いコード整形のための空白と全角スペースハイライト
 
-## Shell-Specific Notes
+## シェル固有の注意事項
 
-### Zsh Configuration Highlights
-- Enhanced history management (10,000 entries, deduplication)
-- Comprehensive alias collection for Git, development, and system operations
-- UV Python package manager integration with aliases (uvi, uvr, uva, uvs, etc.)
-- Advanced prompt with Git status and Python environment display
-- Useful functions (mkcd, extract, ff for file finding, uvnew, uvenv, uvdev)
-- Improved key bindings and auto-completion
-- Plugin support for syntax highlighting and auto-suggestions
-- Performance optimizations with lazy loading
+### Zsh設定のハイライト
+- 拡張履歴管理（10,000エントリ、重複排除）
+- Git、開発、システム操作用の包括的なエイリアスコレクション
+- エイリアス付きUV Pythonパッケージマネージャー統合（uvi、uvr、uva、uvsなど）
+- GitステータスとPython環境表示を含む高度なプロンプト
+- 便利な関数（mkcd、extract、ファイル検索用ff、uvnew、uvenv、uvdev）
+- 改良されたキーバインディングと自動補完
+- シンタックスハイライトと自動提案用のプラグインサポート
+- 遅延読み込みによるパフォーマンス最適化
+
+## 主要アーキテクチャ情報
+
+### ファイル構造
+- 主要なdotfiles: `.bashrc`, `.zshrc`, `.emacs.el`
+- 環境設定: `.python-version`, `.gitignore`
+- カスタムClaudeコマンド: `.claude-commands/*.md`
+- インストールスクリプト: `install.sh`
+
+### シェル設定アーキテクチャ
+- bashとzshの両方の設定に包括的なツール統合が含まれています
+- zsh設定にはgitステータスとPython環境表示を含む高度なプロンプトカスタマイゼーションが含まれています
+- カスタムエイリアスと関数を含むUV Pythonパッケージマネージャー統合
+- 開発ワークフロー最適化のための包括的なエイリアスコレクション
+
+### カスタムコマンドシステム
+- Claudeコマンドは `.claude-commands/` に保存され、インストール時に同期されます
+- コマンドは使用方法とベストプラクティスを含む構造化フォーマットに従います
+- `/commit` コマンドには絵文字ベースの従来型コミットガイドラインが含まれています
+- `/review-branch` コマンドは多角的なコードレビューテンプレートを提供します
