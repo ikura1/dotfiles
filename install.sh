@@ -5,6 +5,10 @@ ln -fs ~/repos/dotfiles/.bashrc ~/.bashrc
 ln -fs ~/repos/dotfiles/.zshrc ~/.zshrc
 ln -ds ~/repos/dotfiles/.emacs.el ~/.emacs.el
 
+# Sync Claude commands
+mkdir -p ~/.claude/commands
+cp ~/repos/dotfiles/.claude-commands/*.md ~/.claude/commands/
+
 
 apt update -y
 
