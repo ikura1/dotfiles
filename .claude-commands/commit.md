@@ -1,6 +1,6 @@
 # Claude Command: Commit
 
-This command helps you create well-formatted commits with conventional commit messages and emoji.
+This command helps you create well-formatted commits with conventional commit messages in Japanese.
 
 ## Usage
 
@@ -25,7 +25,7 @@ Or with options:
 4. Performs a `git diff` to understand what changes are being committed
 5. Analyzes the diff to determine if multiple distinct logical changes are present
 6. If multiple distinct changes are detected, suggests breaking the commit into multiple smaller commits
-7. For each commit (or the single commit if not split), creates a commit message using emoji conventional commit format
+7. For each commit (or the single commit if not split), creates a commit message using conventional commit format in Japanese
 
 ## Best Practices for Commits
 
@@ -41,72 +41,8 @@ Or with options:
   - `perf`: Performance improvements
   - `test`: Adding or fixing tests
   - `chore`: Changes to the build process, tools, etc.
-- **Present tense, imperative mood**: Write commit messages as commands (e.g., "add feature" not "added feature")
+- **Japanese commit messages**: Write commit messages in Japanese using polite language
 - **Concise first line**: Keep the first line under 72 characters
-- **Emoji**: Each commit type is paired with an appropriate emoji:
-  - ✨ `feat`: New feature
-  - 🐛 `fix`: Bug fix
-  - 📝 `docs`: Documentation
-  - 💄 `style`: Formatting/style
-  - ♻️ `refactor`: Code refactoring
-  - ⚡️ `perf`: Performance improvements
-  - ✅ `test`: Tests
-  - 🔧 `chore`: Tooling, configuration
-  - 🚀 `ci`: CI/CD improvements
-  - 🗑️ `revert`: Reverting changes
-  - 🧪 `test`: Add a failing test
-  - 🚨 `fix`: Fix compiler/linter warnings
-  - 🔒️ `fix`: Fix security issues
-  - 👥 `chore`: Add or update contributors
-  - 🚚 `refactor`: Move or rename resources
-  - 🏗️ `refactor`: Make architectural changes
-  - 🔀 `chore`: Merge branches
-  - 📦️ `chore`: Add or update compiled files or packages
-  - ➕ `chore`: Add a dependency
-  - ➖ `chore`: Remove a dependency
-  - 🌱 `chore`: Add or update seed files
-  - 🧑‍💻 `chore`: Improve developer experience
-  - 🧵 `feat`: Add or update code related to multithreading or concurrency
-  - 🔍️ `feat`: Improve SEO
-  - 🏷️ `feat`: Add or update types
-  - 💬 `feat`: Add or update text and literals
-  - 🌐 `feat`: Internationalization and localization
-  - 👔 `feat`: Add or update business logic
-  - 📱 `feat`: Work on responsive design
-  - 🚸 `feat`: Improve user experience / usability
-  - 🩹 `fix`: Simple fix for a non-critical issue
-  - 🥅 `fix`: Catch errors
-  - 👽️ `fix`: Update code due to external API changes
-  - 🔥 `fix`: Remove code or files
-  - 🎨 `style`: Improve structure/format of the code
-  - 🚑️ `fix`: Critical hotfix
-  - 🎉 `chore`: Begin a project
-  - 🔖 `chore`: Release/Version tags
-  - 🚧 `wip`: Work in progress
-  - 💚 `fix`: Fix CI build
-  - 📌 `chore`: Pin dependencies to specific versions
-  - 👷 `ci`: Add or update CI build system
-  - 📈 `feat`: Add or update analytics or tracking code
-  - ✏️ `fix`: Fix typos
-  - ⏪️ `revert`: Revert changes
-  - 📄 `chore`: Add or update license
-  - 💥 `feat`: Introduce breaking changes
-  - 🍱 `assets`: Add or update assets
-  - ♿️ `feat`: Improve accessibility
-  - 💡 `docs`: Add or update comments in source code
-  - 🗃️ `db`: Perform database related changes
-  - 🔊 `feat`: Add or update logs
-  - 🔇 `fix`: Remove logs
-  - 🤡 `test`: Mock things
-  - 🥚 `feat`: Add or update an easter egg
-  - 🙈 `chore`: Add or update .gitignore file
-  - 📸 `test`: Add or update snapshots
-  - ⚗️ `experiment`: Perform experiments
-  - 🚩 `feat`: Add, update, or remove feature flags
-  - 💫 `ui`: Add or update animations and transitions
-  - ⚰️ `refactor`: Remove dead code
-  - 🦺 `feat`: Add or update code related to validation
-  - ✈️ `feat`: Improve offline support
 
 ## Guidelines for Splitting Commits
 
@@ -120,33 +56,33 @@ When analyzing the diff, consider splitting commits based on these criteria:
 
 ## Examples
 
-Good commit messages:
-- ✨ feat: add user authentication system
-- 🐛 fix: resolve memory leak in rendering process
-- 📝 docs: update API documentation with new endpoints
-- ♻️ refactor: simplify error handling logic in parser
-- 🚨 fix: resolve linter warnings in component files
-- 🧑‍💻 chore: improve developer tooling setup process
-- 👔 feat: implement business logic for transaction validation
-- 🩹 fix: address minor styling inconsistency in header
-- 🚑️ fix: patch critical security vulnerability in auth flow
-- 🎨 style: reorganize component structure for better readability
-- 🔥 fix: remove deprecated legacy code
-- 🦺 feat: add input validation for user registration form
-- 💚 fix: resolve failing CI pipeline tests
-- 📈 feat: implement analytics tracking for user engagement
-- 🔒️ fix: strengthen authentication password requirements
-- ♿️ feat: improve form accessibility for screen readers
+Good commit messages (in Japanese):
+- feat: ユーザー認証システムを追加
+- fix: レンダリングプロセスのメモリリークを修正
+- docs: 新しいエンドポイントのAPIドキュメントを更新
+- refactor: パーサーのエラーハンドリングロジックを簡素化
+- fix: コンポーネントファイルのリンター警告を解決
+- chore: 開発者ツールのセットアッププロセスを改善
+- feat: トランザクション検証のビジネスロジックを実装
+- fix: ヘッダーの軽微なスタイリング不整合を修正
+- fix: 認証フローの重要なセキュリティ脆弱性を修正
+- style: より良い可読性のためにコンポーネント構造を再編成
+- fix: 非推奨のレガシーコードを削除
+- feat: ユーザー登録フォームの入力検証を追加
+- fix: 失敗するCIパイプラインテストを解決
+- feat: ユーザーエンゲージメントのアナリティクス追跡を実装
+- fix: 認証パスワード要件を強化
+- feat: スクリーンリーダー用のフォームアクセシビリティを改善
 
-Example of splitting commits:
-- First commit: ✨ feat: add new solc version type definitions
-- Second commit: 📝 docs: update documentation for new solc versions
-- Third commit: 🔧 chore: update package.json dependencies
-- Fourth commit: 🏷️ feat: add type definitions for new API endpoints
-- Fifth commit: 🧵 feat: improve concurrency handling in worker threads
-- Sixth commit: 🚨 fix: resolve linting issues in new code
-- Seventh commit: ✅ test: add unit tests for new solc version features
-- Eighth commit: 🔒️ fix: update dependencies with security vulnerabilities
+Example of splitting commits (in Japanese):
+- First commit: feat: 新しいsolcバージョンの型定義を追加
+- Second commit: docs: 新しいsolcバージョンのドキュメントを更新
+- Third commit: chore: package.jsonの依存関係を更新
+- Fourth commit: feat: 新しいAPIエンドポイントの型定義を追加
+- Fifth commit: feat: ワーカースレッドの並行処理を改善
+- Sixth commit: fix: 新しいコードのリンティング問題を解決
+- Seventh commit: test: 新しいsolcバージョン機能のユニットテストを追加
+- Eighth commit: fix: セキュリティ脆弱性のある依存関係を更新
 
 ## Command Options
 
