@@ -2,7 +2,7 @@
 
 **対象**: $ARGUMENTS
 
-プロジェクトディレクトリは `/home/ikura1/repos/<project-name>/` に作成してください。
+プロジェクトディレクトリは `~/repos/<project-name>/` に作成してください。
 
 ---
 
@@ -154,5 +154,5 @@ tasks.md の各ユーザーストーリーを、以下の TDD サイクルで実
 - 実装フェーズ: 可決 ✅ (N/3 APPROVE)
 
 ### プロジェクトパス
-/home/ikura1/repos/<project-name>/
+~/repos/<project-name>/
 ```

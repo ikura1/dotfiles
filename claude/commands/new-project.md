@@ -19,14 +19,14 @@
 - dev-pm の要件を引き継ぐ
 - コマンド構造・オプション・引数を設計する
 - エラーメッセージ・ヘルプテキストを設計する
-- `/home/ikura1/repos/<project-name>/UX_DESIGN.md` を作成する
+- `~/repos/<project-name>/UX_DESIGN.md` を作成する
 
 ### ステップ 3: アーキテクチャ設計（dev-architect）
 `dev-architect` エージェントを使って技術設計を行ってください。
 - dev-pm の成果物と dev-ux-designer の UX設計を引き継ぐ
 - 技術スタックを選定する
 - ディレクトリ構造を設計する
-- `/home/ikura1/repos/<project-name>/ARCHITECTURE.md` を作成する
+- `~/repos/<project-name>/ARCHITECTURE.md` を作成する
 
 ### ステップ 4: MAGI 第1評決 — アーキテクチャ承認
 
@@ -47,7 +47,7 @@ CASPER-3   : [APPROVE / REJECT]
 ### ステップ 5: 実装（dev-developer）
 `dev-developer` エージェントを使ってコードを実装してください。
 - `UX_DESIGN.md` と `ARCHITECTURE.md` の設計に従って実装する
-- `/home/ikura1/repos/<project-name>/` にすべてのファイルを作成する
+- `~/repos/<project-name>/` にすべてのファイルを作成する
 - `README.md` も作成する
 
 ### ステップ 6: コードレビュー（dev-reviewer）

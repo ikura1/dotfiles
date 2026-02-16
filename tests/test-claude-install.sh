@@ -2,7 +2,7 @@
 # tests/test-claude-install.sh -- Claude dotfiles install/uninstall 自動テスト
 #
 # Usage:
-#   bash /home/ikura1/repos/dotfiles/tests/test-claude-install.sh
+#   bash <dotfiles-repo>/tests/test-claude-install.sh
 #
 # テスト方針:
 #   - 本番環境 (~/.claude/, 実際の dotfiles) には一切触れない
@@ -136,8 +136,8 @@ TEST_DOTFILES="/tmp/test_dotfiles_$$"
 TEST_HOME="/tmp/test_home_$$"
 
 # スクリプトの実際のパス（このテストファイルから見た相対位置）
-SCRIPTS_DIR="/home/ikura1/repos/dotfiles/scripts"
-REAL_DOTFILES_DIR="/home/ikura1/repos/dotfiles"
+SCRIPTS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../scripts" && pwd)"
+REAL_DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 # テスト用のフィクスチャを作成する
 setup_test_env() {
@@ -151,7 +151,7 @@ setup_test_env() {
   echo "# test agent" > "${TEST_DOTFILES}/claude/agents/test-agent.md"
   echo "# test command" > "${TEST_DOTFILES}/claude/commands/test-command.md"
   echo "# test rule" > "${TEST_DOTFILES}/claude/rules/test-rule.md"
-  echo "# test CLAUDE.md" > "${TEST_DOTFILES}/CLAUDE.md"
+  echo "# test CLAUDE-BASE.md" > "${TEST_DOTFILES}/CLAUDE-BASE.md"
 
   # scripts/ は実際のスクリプトをシンボリックリンクで参照
   # （テスト dotfiles に lib.sh などを別途作らなくて済むよう、scripts は実体へのリンクを張る）

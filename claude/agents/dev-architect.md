@@ -80,4 +80,4 @@ Options:
 - 既存プロジェクトがある場合はそのパターンを踏襲する
 - 過度に複雑な設計を避け、シンプルさを優先する
 - 設計書を書いたら必ず `ARCHITECTURE.md` として保存する
-- `/home/ikura1/repos/<project-name>/` に全ファイルを作成する
+- `~/repos/<project-name>/` に全ファイルを作成する

@@ -120,15 +120,15 @@ main() {
     fi
   done
 
-  # CLAUDE.md を ~/.claude/CLAUDE.md にコピー（既に存在する場合はスキップ）
-  local dotfiles_claude_md="${DOTFILES_DIR}/CLAUDE.md"
+  # CLAUDE-BASE.md を ~/.claude/CLAUDE.md にコピー（既に存在する場合はスキップ）
+  local dotfiles_claude_md="${DOTFILES_DIR}/CLAUDE-BASE.md"
   local claude_md="${CLAUDE_HOME}/CLAUDE.md"
   if [[ -f "${dotfiles_claude_md}" ]]; then
     if [[ "${DRY_RUN:-0}" == "1" ]]; then
       if [[ -f "${claude_md}" ]]; then
         log_action "skip" "CLAUDE.md already exists"
       else
-        log_action "create" "~/.claude/CLAUDE.md   (copy from CLAUDE.md)"
+        log_action "create" "~/.claude/CLAUDE.md   (copy from CLAUDE-BASE.md)"
       fi
     else
       if [[ -f "${claude_md}" ]]; then
