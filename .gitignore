@@ -3,3 +3,16 @@
 # emacs editing
 *.*~
 *.*#
+
+# Claude - sensitive and runtime files
+.claude.json
+claude/.claude.json
+*.credentials*
+*.token*
+claude/settings.json
+claude/statsig/
+claude/todos/
+claude/cache/
+claude/plugins/
+# Backup files
+.claude/backups/

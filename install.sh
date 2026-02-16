@@ -1,14 +1,14 @@
 #!/bin/bash
-set -eup pipefail
+set -euo pipefail
 
-ln -fs ~/repos/dotfiles/.bashrc ~/.bashrc
-ln -fs ~/repos/dotfiles/.zshrc ~/.zshrc
-ln -ds ~/repos/dotfiles/.emacs.el ~/.emacs.el
+DOTFILES_DIR="$(cd "$(dirname "$0")" && pwd)"
 
-# Sync Claude commands and base configuration
-mkdir -p ~/.claude/commands
-cp ~/repos/dotfiles/.claude-commands/*.md ~/.claude/commands/
-cp ~/repos/dotfiles/CLAUDE-BASE.md ~/.claude/CLAUDE.md
+ln -fs "${DOTFILES_DIR}/.bashrc" ~/.bashrc
+ln -fs "${DOTFILES_DIR}/.zshrc" ~/.zshrc
+ln -fs "${DOTFILES_DIR}/.emacs.el" ~/.emacs.el
+
+# Install Claude dotfiles (symlinks for agents/, commands/, rules/)
+bash "$(dirname "$0")/scripts/install-claude.sh"
 
 
 apt update -y
