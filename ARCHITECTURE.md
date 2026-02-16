@@ -19,7 +19,7 @@ Claude が自動生成するファイル（statsig, todos, cache 等）は管理
 
 ## ディレクトリ構造
 
-### 変更後のリポジトリ構造
+### リポジトリ構造
 
 ```
 ~/repos/dotfiles/
@@ -28,27 +28,52 @@ Claude が自動生成するファイル（statsig, todos, cache 等）は管理
   .emacs.el
   .python-version
   .gitignore
-  CLAUDE.md
-  CLAUDE-BASE.md
-  UX_DESIGN.md
-  ARCHITECTURE.md          # 本ドキュメント
-  Makefile                 # 変更: claude 関連ターゲット追加
-  install.sh               # 変更: claude セットアップを呼び出す
-  claude/                  # 新規: Claude 設定の実体
-    agents/                #   ~/.claude/agents -> ここへ symlink
-      *.md
-    commands/              #   ~/.claude/commands -> ここへ symlink
+  CLAUDE.md                    # プロジェクト固有の Claude 設定
+  CLAUDE-BASE.md               # ~/.claude/CLAUDE.md にコピーされるベース設定
+  AGENT_TEAM.md                # エージェントチーム使用ガイド
+  ARCHITECTURE.md              # 本ドキュメント
+  Makefile                     # claude 関連ターゲットを含む
+  install.sh                   # dotfiles 全体のインストール
+  claude/                      # Claude 設定の実体（正規ディレクトリ）
+    agents/                    #   ~/.claude/agents -> ここへ symlink
+      dev-pm.md
+      dev-ux-designer.md
+      dev-architect.md
+      dev-developer.md
+      dev-reviewer.md
+      dev-tester.md
+      security-reviewer.md
+      spec-writer.md
+      spec-planner.md
+      spec-tasker.md
+      magi-melchior.md
+      magi-balthasar.md
+      magi-casper.md
+      t-wada.md
+    commands/                  #   ~/.claude/commands -> ここへ symlink
       commit.md
       create-worktrees.md
       gemini-search.md
       review-branch.md
-    rules/                 #   ~/.claude/rules -> ここへ symlink
-      *.md
-  scripts/                 # 新規: インストールスクリプト群
-    lib.sh                 #   共通関数ライブラリ
-    install-claude.sh      #   Claude symlink 作成
-    uninstall-claude.sh    #   Claude symlink 解除・復元
-    status-claude.sh       #   symlink 状態表示
+      new-project.md
+      spec-project.md
+      magi-vote.md
+      tdd.md
+    rules/                     #   ~/.claude/rules -> ここへ symlink
+      agents.md
+      coding-style.md
+      security.md
+      testing.md
+      git-workflow.md
+  scripts/                     # インストールスクリプト群
+    lib.sh                     #   共通関数ライブラリ
+    install-claude.sh          #   Claude symlink 作成
+    uninstall-claude.sh        #   Claude symlink 解除・復元
+    status-claude.sh           #   symlink 状態表示
+  tests/
+    test-claude-install.sh     #   install/uninstall 自動テスト
+  .claude/
+    settings.local.json        # ローカル権限設定
 ```
 
 ### ホームディレクトリ側の状態（インストール後）
@@ -69,6 +94,185 @@ Claude が自動生成するファイル（statsig, todos, cache 等）は管理
 
 ---
 
+## リファクタリング: 旧構造から新構造への移行
+
+### 解決すべき問題
+
+#### 問題 1: コマンドファイルの重複
+
+`.claude-commands/`（旧）と `claude/commands/`（新）に同一内容のファイルが4つ存在する。
+
+| ファイル | `.claude-commands/` | `claude/commands/` | 備考 |
+|---|---|---|---|
+| `commit.md` | 存在 | 存在 | 完全一致を確認済み |
+| `create-worktrees.md` | 存在 | 存在 | 差分確認が必要 |
+| `gemini-search.md` | 存在 | 存在 | 差分確認が必要 |
+| `review-branch.md` | 存在 | 存在 | 差分確認が必要 |
+| `new-project.md` | - | 存在 | 新規のみ |
+| `spec-project.md` | - | 存在 | 新規のみ |
+| `magi-vote.md` | - | 存在 | 新規のみ |
+| `tdd.md` | - | 存在 | 新規のみ |
+
+#### 問題 2: CLAUDE.md が旧構造を参照
+
+`CLAUDE.md` の以下の箇所が `.claude-commands/` を参照している:
+
+- 16行目: `このリポジトリには .claude-commands/ に配置された...`
+- 88行目: `カスタムClaudeコマンド: .claude-commands/*.md`
+- 98行目: `Claudeコマンドは .claude-commands/ に保存され...`
+
+#### 問題 3: ハードコードされたパス `/home/ikura1/`
+
+| ファイル | 該当行 | 用途 |
+|---|---|---|
+| `claude/commands/new-project.md` | 22, 29, 50行目 | プロジェクト出力先パス |
+| `claude/commands/spec-project.md` | 5, 157行目 | プロジェクト出力先パス |
+| `claude/agents/dev-architect.md` | 83行目 | プロジェクト出力先パス |
+| `tests/test-claude-install.sh` | 5, 139, 140行目 | スクリプトパスとdotfilesパス |
+| `AGENT_TEAM.md` | 83, 269行目 | ドキュメント内のパス例 |
+
+**対象外**: `.bashrc`（25, 38, 39行目）と `.zshrc`（271行目）の PNPM_HOME 等はシェル環境固有の設定であり、本リファクタリングの対象外とする。
+
+---
+
+### 変更計画
+
+#### 変更 1: `.claude-commands/` ディレクトリの削除
+
+**方針**: `claude/commands/` に完全な上位互換が存在するため、旧ディレクトリを丸ごと削除する。
+
+**事前確認**:
+- 4ファイル全ての差分を確認し、`claude/commands/` 側に差分があればマージ
+- `install.sh` が `.claude-commands/` を参照していないことを確認
+
+**操作**:
+```bash
+git rm -r .claude-commands/
+```
+
+#### 変更 2: CLAUDE.md の更新
+
+**方針**: `.claude-commands/` への参照を全て `claude/commands/` に変更し、新構造を正確に反映する。
+
+**変更箇所**:
+
+1. Claudeコマンドセクション（16行目付近）:
+   - 変更前: `このリポジトリには .claude-commands/ に配置されたカスタムClaudeコマンドが含まれています`
+   - 変更後: `このリポジトリには claude/commands/ に配置されたカスタムClaudeコマンドが含まれています`
+   - コマンド一覧を8件全て記載する
+
+2. ファイル構造セクション（88行目付近）:
+   - 変更前: `カスタムClaudeコマンド: .claude-commands/*.md`
+   - 変更後: `Claude設定: claude/（agents/, commands/, rules/）`
+
+3. カスタムコマンドシステムセクション（97-101行目）:
+   - 変更前: `Claudeコマンドは .claude-commands/ に保存され`
+   - 変更後: `Claudeコマンドは claude/commands/ に保存され`
+   - エージェントとルールの説明も追加
+
+4. 新規追加: `make install-claude` によるインストール方法の説明
+
+#### 変更 3: ハードコードパスの汎用化（Claude設定ファイル）
+
+**方針**: `/home/ikura1/repos/` を `~/repos/` に置換する。Claude Code の実行時にシェル変数 `$HOME` の展開として `~` が解釈されるため、環境依存を排除できる。
+
+**対象ファイルと変更内容**:
+
+`claude/commands/new-project.md`（3箇所）:
+```
+変更前: /home/ikura1/repos/<project-name>/
+変更後: ~/repos/<project-name>/
+```
+
+`claude/commands/spec-project.md`（2箇所）:
+```
+変更前: /home/ikura1/repos/<project-name>/
+変更後: ~/repos/<project-name>/
+```
+
+`claude/agents/dev-architect.md`（1箇所）:
+```
+変更前: /home/ikura1/repos/<project-name>/
+変更後: ~/repos/<project-name>/
+```
+
+`AGENT_TEAM.md`（2箇所）:
+```
+変更前: /home/ikura1/repos/<project-name>/
+変更後: ~/repos/<project-name>/
+
+変更前: /magi-vote /home/ikura1/repos/my-tool/ARCHITECTURE.md
+変更後: /magi-vote ~/repos/my-tool/ARCHITECTURE.md
+```
+
+#### 変更 4: テストファイルのハードコードパス修正
+
+**方針**: `BASH_SOURCE[0]` からスクリプト自身の位置を基準にパスを自動算出する。
+
+`tests/test-claude-install.sh` の変更:
+
+```bash
+# 変更前 (139-140行目):
+SCRIPTS_DIR="/home/ikura1/repos/dotfiles/scripts"
+REAL_DOTFILES_DIR="/home/ikura1/repos/dotfiles"
+
+# 変更後:
+SCRIPTS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../scripts" && pwd)"
+REAL_DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+```
+
+```bash
+# 変更前 (5行目、コメント):
+#   bash /home/ikura1/repos/dotfiles/tests/test-claude-install.sh
+
+# 変更後:
+#   bash <dotfiles-repo>/tests/test-claude-install.sh
+```
+
+---
+
+### 実装順序
+
+変更の依存関係と安全性を考慮した実施順序:
+
+1. **Step 1**: `.claude-commands/` と `claude/commands/` の重複4ファイルの差分確認
+2. **Step 2**: 差分がある場合は `claude/commands/` 側にマージ
+3. **Step 3**: `tests/test-claude-install.sh` のハードコードパス修正 + テスト実行
+4. **Step 4**: Claude設定ファイルのパス汎用化（`new-project.md`, `spec-project.md`, `dev-architect.md`）
+5. **Step 5**: `AGENT_TEAM.md` のパス汎用化
+6. **Step 6**: `CLAUDE.md` の更新（旧構造参照の修正）
+7. **Step 7**: `.claude-commands/` の削除（`git rm -r`）
+8. **Step 8**: 最終テスト実行 + `make status` で状態確認
+
+### リスク評価
+
+| リスク | 影響度 | 対策 |
+|---|---|---|
+| 重複ファイルに差分がある | 中 | Step 1 で差分確認、Step 2 でマージ |
+| `install.sh` が `.claude-commands/` を参照 | 低 | 事前確認（現状 `claude/` のみ対象） |
+| テストのパス自動解決が環境依存で壊れる | 低 | `${BASH_SOURCE[0]}` は bash の標準機能 |
+| `~/repos/` パスが他環境で異なる | 低 | `~` は `$HOME` に展開される |
+
+### コミット計画（推奨: 2コミット構成）
+
+```
+refactor: Claude設定のハードコードパスを汎用化
+
+- claude/commands/new-project.md, spec-project.md のパスを ~/repos/ に変更
+- claude/agents/dev-architect.md のパスを ~/repos/ に変更
+- tests/test-claude-install.sh のパスを BASH_SOURCE ベースの自動解決に変更
+- AGENT_TEAM.md のパスを ~/repos/ に変更
+```
+
+```
+refactor: 旧 .claude-commands/ を削除し CLAUDE.md を新構造に更新
+
+- .claude-commands/ ディレクトリを削除（claude/commands/ に統合済み）
+- CLAUDE.md の参照を claude/ 構造に更新
+```
+
+---
+
 ## シンボリックリンク戦略
 
 ### 採用: ディレクトリ単位のシンボリックリンク
@@ -85,14 +289,7 @@ Claude が自動生成するファイル（statsig, todos, cache 等）は管理
 | ディレクトリ内の一貫性 | 保証される | 一部だけリンク漏れのリスク |
 | 制約 | ディレクトリ内の全ファイルが管理対象 | 個別に管理対象外を作れる |
 
-ディレクトリ内のファイルを個別に管理対象外にする必要性は現時点でないため、
-シンプルなディレクトリ単位を採用する。将来ファイル単位が必要になった場合は
-`scripts/install-claude.sh` のリンク作成ロジックのみ変更すればよい。
-
 ### 管理対象ディレクトリ
-
-以下の 3 ディレクトリのみを管理対象とする。この一覧は `scripts/lib.sh` 内で
-配列として定義し、追加・削除が容易な設計にする。
 
 ```bash
 CLAUDE_MANAGED_DIRS=(agents commands rules)
@@ -106,211 +303,57 @@ CLAUDE_MANAGED_DIRS=(agents commands rules)
 
 全スクリプトから `source` される共通関数群。
 
+**定数**:
 ```bash
-#!/bin/bash
-# scripts/lib.sh -- Claude dotfiles 共通ライブラリ
-
-# --- 定数 ---
-DOTFILES_DIR="${DOTFILES_DIR:-$HOME/repos/dotfiles}"
-CLAUDE_HOME="${CLAUDE_HOME:-$HOME/.claude}"
+DOTFILES_DIR="${DOTFILES_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
+CLAUDE_HOME="${CLAUDE_HOME:-${HOME}/.claude}"
 CLAUDE_SRC_DIR="${DOTFILES_DIR}/claude"
 CLAUDE_BACKUP_DIR="${CLAUDE_HOME}/backups"
 CLAUDE_MANAGED_DIRS=(agents commands rules)
-
-# --- 環境変数（オプション） ---
-# DRY_RUN=1  : 変更を行わない
-# VERBOSE=1  : 詳細ログ
-# NO_COLOR=1 : カラー無効化
-
-# --- カラー出力 ---
-setup_colors()
-#   TTY 判定と NO_COLOR を考慮してカラー変数を設定する
-#   呼び出し: 各スクリプトの先頭で 1 回
-
-log_action(action, message)
-#   "[action] message" 形式で出力する
-#   action に応じたカラーを自動適用
-#   DRY_RUN=1 時は action を "would ${action}" に変換
-#   例: log_action "create" "~/.claude/agents -> ~/repos/dotfiles/claude/agents"
-
-log_error(message)
-#   "[claude] ERROR: message" を stderr に赤太字で出力
-
-log_header(message)
-#   "[claude] message" をセクション開始行として出力
-
-log_summary(created, skipped, backed_up)
-#   "[claude] Done. ..." サマリー行を出力
-
-# --- ファイルシステム操作 ---
-ensure_dir(path)
-#   mkdir -p を DRY_RUN 考慮で実行
-
-backup_dir(src_path)
-#   src_path を CLAUDE_BACKUP_DIR にタイムスタンプ付きで移動
-#   戻り値: バックアップ先のパス
-#   DRY_RUN=1 時はログのみ
-
-create_symlink(src, dest)
-#   ln -s を DRY_RUN 考慮で実行
-
-remove_symlink(path)
-#   symlink であることを確認してから rm
-#   通常ディレクトリの場合はエラー
-
-# --- 状態判定 ---
-is_correct_symlink(link_path, expected_target)
-#   link_path が expected_target を指す symlink か判定
-#   戻り値: 0 (正しい) / 1 (不一致または非 symlink)
-
-get_link_status(dir_name)
-#   指定ディレクトリの状態を判定する
-#   戻り値(stdout): "correct" | "wrong_target" | "directory" | "missing" | "other"
-
-find_latest_backup(dir_name)
-#   dir_name の最新バックアップパスを返す
-#   バックアップがない場合は空文字列
-
-count_files(dir_path)
-#   ディレクトリ内のファイル数を返す（再帰なし）
-
-# --- バリデーション ---
-validate_source_dir(dir_name)
-#   CLAUDE_SRC_DIR/dir_name が存在するか確認
-#   存在しない場合はエラーメッセージを出力して return 1
-
-validate_dotfiles_dir()
-#   DOTFILES_DIR が存在するか確認
 ```
+
+**主要関数**:
+- `setup_colors()` -- TTY 判定と NO_COLOR を考慮してカラー変数を設定
+- `log_action(action, message)` -- `[action] message` 形式で出力、DRY_RUN 対応
+- `log_error(message)` -- stderr に赤太字でエラー出力
+- `log_header(message)` -- セクション開始行を出力
+- `log_summary(created, skipped, backed_up)` -- サマリー出力
+- `ensure_dir(path)` -- mkdir -p を DRY_RUN 考慮で実行
+- `backup_dir(dir_name)` -- タイムスタンプ付きバックアップ
+- `create_symlink(src, dest)` -- DRY_RUN 考慮の ln -s
+- `remove_symlink(path)` -- symlink 確認後に rm
+- `get_link_status(dir_name)` -- 状態判定（correct/wrong_target/directory/missing/other）
+- `find_latest_backup(dir_name)` -- 最新バックアップパスを返す
+- `validate_source_dir(dir_name)` -- ソースディレクトリの存在確認
+- `validate_dotfiles_dir()` -- DOTFILES_DIR の存在確認
 
 ### 2. `scripts/install-claude.sh` -- Claude 設定インストール
 
-```bash
-#!/bin/bash
-# scripts/install-claude.sh -- Claude dotfiles のシンボリックリンクを作成する
-#
-# Usage: ./scripts/install-claude.sh [DRY_RUN=1] [VERBOSE=1]
-#
-# 処理フロー:
-#   1. validate_dotfiles_dir() でリポジトリの存在確認
-#   2. CLAUDE_MANAGED_DIRS をループ:
-#      a. validate_source_dir() でソースの存在確認
-#      b. get_link_status() で現在の状態を判定
-#      c. "correct"   -> skip
-#      d. "directory"  -> backup_dir() してから create_symlink()
-#      e. "wrong_target" -> エラー出力（手動対応を促す）
-#      f. "missing"   -> create_symlink()
-#   3. CLAUDE-BASE.md を ~/.claude/CLAUDE.md にコピー
-#   4. log_summary() でサマリー出力
-
-source "$(dirname "$0")/lib.sh"
-```
+処理フロー:
+1. `validate_dotfiles_dir()` でリポジトリの存在確認
+2. `CLAUDE_MANAGED_DIRS` をループ:
+   - `correct` -> skip
+   - `directory` -> `backup_dir()` + `create_symlink()`
+   - `wrong_target` -> エラー出力（手動対応を促す）
+   - `missing` -> `create_symlink()`
+3. `CLAUDE-BASE.md` を `~/.claude/CLAUDE.md` にコピー
+4. `log_summary()` でサマリー出力
 
 ### 3. `scripts/uninstall-claude.sh` -- Claude 設定アンインストール
 
-```bash
-#!/bin/bash
-# scripts/uninstall-claude.sh -- symlink を解除し、バックアップを復元する
-#
-# 処理フロー:
-#   1. CLAUDE_MANAGED_DIRS をループ:
-#      a. symlink でなければスキップ
-#      b. remove_symlink() で symlink 削除
-#      c. find_latest_backup() でバックアップを検索
-#      d. バックアップあり -> mv で復元
-#      e. バックアップなし -> mkdir -p で空ディレクトリ作成
-#   2. サマリー出力
-
-source "$(dirname "$0")/lib.sh"
-```
+処理フロー:
+1. `CLAUDE_MANAGED_DIRS` をループ:
+   - symlink でなければスキップ
+   - `remove_symlink()` で削除
+   - バックアップあり -> mv で復元
+   - バックアップなし -> mkdir -p で空ディレクトリ作成
 
 ### 4. `scripts/status-claude.sh` -- 状態表示
 
-```bash
-#!/bin/bash
-# scripts/status-claude.sh -- 現在の symlink 状態を表示する
-#
-# 処理フロー:
-#   1. CLAUDE_MANAGED_DIRS をループ:
-#      a. get_link_status() で状態取得
-#      b. count_files() でファイル数取得
-#      c. 1 行で状態を表示
-#   2. backups/ のエントリ数を表示
-#   3. サマリー("N/3 managed by dotfiles")
-
-source "$(dirname "$0")/lib.sh"
-```
-
----
-
-## 既存ファイルへの変更方針
-
-### `install.sh` の変更
-
-既存の `install.sh` は最小限の変更に留める。Claude 設定の処理を
-`scripts/install-claude.sh` に委譲する形にする。
-
-```bash
-# 変更前（削除対象の行）:
-mkdir -p ~/.claude/commands
-cp ~/repos/dotfiles/.claude-commands/*.md ~/.claude/commands/
-cp ~/repos/dotfiles/CLAUDE-BASE.md ~/.claude/CLAUDE.md
-
-# 変更後（追加する行）:
-bash "$(dirname "$0")/scripts/install-claude.sh"
-```
-
-既存のシェル設定リンク（.bashrc, .zshrc, .emacs.el）には一切触れない。
-
-### `Makefile` の変更
-
-既存の `install` ターゲットはそのまま維持し、新規ターゲットを追加する。
-
-```makefile
-# 既存（変更なし）
-install:
-	./install.sh
-
-# 新規追加
-install-claude:
-	@bash scripts/install-claude.sh
-
-uninstall-claude:
-	@bash scripts/uninstall-claude.sh
-
-status:
-	@bash scripts/status-claude.sh
-
-help:
-	@echo "Targets:"
-	@echo "  install            dotfiles 全体をインストール"
-	@echo "  install-claude     Claude 設定のみ（symlink 作成）"
-	@echo "  uninstall-claude   Claude symlink を解除・復元"
-	@echo "  status             symlink 状態を確認"
-	@echo "  help               このヘルプ"
-	@echo ""
-	@echo "Options:"
-	@echo "  DRY_RUN=1          変更を行わず予定操作を表示"
-	@echo "  VERBOSE=1          詳細ログを表示"
-
-.PHONY: install install-claude uninstall-claude status help
-```
-
-`DRY_RUN` と `VERBOSE` は Make 変数として渡され、スクリプト内で環境変数として参照される。
-`make install-claude DRY_RUN=1` と実行すると、Make が `DRY_RUN=1` を環境に
-エクスポートするため、スクリプト側で特別な受け渡し処理は不要。
-
-### `.claude-commands/` からの移行
-
-既存の `.claude-commands/*.md` の内容を `claude/commands/` に移動する。
-`.claude-commands/` ディレクトリは互換性のため一定期間残してもよいが、
-`install.sh` からの `cp` 処理は削除する。
-
-移行手順:
-1. `mkdir -p claude/commands`
-2. `mv .claude-commands/*.md claude/commands/`
-3. `install.sh` の `cp` 行を削除、`scripts/install-claude.sh` 呼び出しに置換
-4. `.claude-commands/` を削除（または `.gitkeep` で残す）
+処理フロー:
+1. `CLAUDE_MANAGED_DIRS` をループして状態とファイル数を表示
+2. backups/ のエントリ数を表示
+3. サマリー出力
 
 ---
 
@@ -327,21 +370,15 @@ scripts/install-claude.sh
   +-- source scripts/lib.sh
   |
   +-- validate_dotfiles_dir()
-  |     ~/repos/dotfiles/ が存在するか確認
   |
   +-- for dir in agents commands rules:
   |     |
   |     +-- validate_source_dir(dir)
-  |     |     ~/repos/dotfiles/claude/{dir}/ が存在するか確認
-  |     |
   |     +-- get_link_status(dir)
-  |     |     ~/.claude/{dir} の現在の状態を判定
-  |     |
   |     +-- [状態に応じた分岐]
-  |           |
-  |           +-- correct:      log_action("skip", ...)
+  |           +-- correct:      skip
   |           +-- directory:    backup_dir() -> create_symlink()
-  |           +-- wrong_target: log_error(...) -> continue
+  |           +-- wrong_target: log_error(...)
   |           +-- missing:      create_symlink()
   |
   +-- cp CLAUDE-BASE.md -> ~/.claude/CLAUDE.md
@@ -349,100 +386,15 @@ scripts/install-claude.sh
   +-- log_summary()
 ```
 
-### symlink の作成・削除の流れ
-
-```
-[作成]
-  ~/repos/dotfiles/claude/commands/  (実体)
-       ^
-       |  ln -s
-       |
-  ~/.claude/commands  (symlink)
-
-
-[バックアップ]
-  ~/.claude/commands/  (既存の通常ディレクトリ)
-       |
-       |  mv
-       v
-  ~/.claude/backups/commands.bak.20260215_143022/  (退避)
-
-
-[復元]
-  ~/.claude/commands  (symlink)
-       |
-       |  rm (symlink のみ削除)
-       v
-  ~/.claude/backups/commands.bak.20260215_143022/
-       |
-       |  mv
-       v
-  ~/.claude/commands/  (通常ディレクトリとして復元)
-```
-
 ---
 
 ## エラーハンドリング方針
 
-### スクリプト全体
-
 - `set -euo pipefail` を全スクリプトの先頭に記載
 - エラー発生時は `log_error()` で原因と修正方法（`Fix:` 行）を出力
-- 1 つのディレクトリでエラーが発生しても、残りのディレクトリの処理は続行する
-  （`set -e` の影響を受けないよう、エラーは関数内で処理して戻り値で判定）
-
-### wrong_target（競合 symlink）の扱い
-
-既に別のパスへの symlink が存在する場合は、自動で上書きせずエラーとして報告する。
-理由: ユーザーが意図的に別の場所を指している可能性があり、無断で変更すると
-データロスにつながる。
-
-### バックアップのタイムスタンプ衝突
-
-`date +%Y%m%d_%H%M%S` で秒単位の一意性を確保する。万が一衝突した場合は
-エラーとして報告し、処理を中断する（上書き防止）。
-
----
-
-## テスト方針
-
-bash スクリプトのテストは以下の方法で行う。
-
-### 手動テスト手順
-
-1. `DRY_RUN=1` で全操作の事前確認
-2. 初回インストール（クリーン環境）
-3. 冪等性確認（2 回目の実行）
-4. 既存ディレクトリがある状態でのインストール（バックアップ動作）
-5. アンインストールとバックアップ復元
-6. status 表示の正確性
-
-### テスト用スクリプト（将来的に追加可能）
-
-```
-tests/
-  test-claude-install.sh    # 一時ディレクトリで install/uninstall を自動テスト
-```
-
-テスト用スクリプトでは `CLAUDE_HOME` と `DOTFILES_DIR` を一時ディレクトリに
-上書きすることで、実環境を汚さずにテストできる設計になっている。
-
----
-
-## 作成・変更するファイル一覧
-
-| ファイル | 操作 | 説明 |
-|----------|------|------|
-| `claude/agents/` | 新規作成 | agents 実体ディレクトリ（初期は空、`.gitkeep` を配置） |
-| `claude/commands/*.md` | 移動 | `.claude-commands/` から移動 |
-| `claude/rules/` | 新規作成 | rules 実体ディレクトリ（初期は空、`.gitkeep` を配置） |
-| `scripts/lib.sh` | 新規作成 | 共通関数ライブラリ |
-| `scripts/install-claude.sh` | 新規作成 | インストールスクリプト |
-| `scripts/uninstall-claude.sh` | 新規作成 | アンインストールスクリプト |
-| `scripts/status-claude.sh` | 新規作成 | 状態表示スクリプト |
-| `install.sh` | 変更 | cp 行を削除、scripts/install-claude.sh 呼び出しに置換 |
-| `Makefile` | 変更 | install-claude, uninstall-claude, status, help ターゲット追加 |
-| `.claude-commands/` | 削除 | claude/commands/ へ移行後に削除 |
+- 1 つのディレクトリでエラーが発生しても、残りのディレクトリの処理は続行
+- wrong_target（競合 symlink）は自動上書きせずエラーとして報告
+- バックアップのタイムスタンプ衝突時はエラーとして中断（上書き防止）
 
 ---
 
@@ -451,31 +403,20 @@ tests/
 ### なぜ `~/.claude/` 全体を symlink しないのか
 
 Claude Code は `~/.claude/` 直下に以下のファイルを自動生成・更新する:
-- `statsig/` -- 機能フラグのキャッシュ
-- `todos/` -- タスク管理データ
-- `cache/` -- 各種キャッシュ
+- `statsig/`, `todos/`, `cache/` -- 一時データ
 - `settings.json` -- ユーザー設定
 - `.credentials.json` -- 認証情報
 
-これらを Git 管理下に置くのは不適切（機密情報・一時データ）であり、
-`~/.claude/` 全体を symlink するとこれらも dotfiles リポジトリに含まれてしまう。
-サブディレクトリ単位の symlink により、管理対象を明確に制御する。
+これらを Git 管理下に置くのは不適切であり、サブディレクトリ単位の symlink で管理対象を明確に制御する。
 
 ### なぜ `scripts/` を分離するのか
 
-`install.sh` に全ロジックを埋め込むと以下の問題が生じる:
-- ファイルが肥大化し保守性が低下する
-- `uninstall-claude` や `status` を独立して実行できない
-- 共通関数の再利用ができない
-
-`scripts/lib.sh` に共通ロジックを切り出し、各操作を独立スクリプトにすることで、
-単一責任の原則を守り、テスタビリティも確保する。
+`install.sh` に全ロジックを埋め込むとファイル肥大化・単独実行不可・共通関数の再利用不可になるため、`scripts/lib.sh` に共通ロジックを切り出し、各操作を独立スクリプトにする。
 
 ### なぜ CLAUDE-BASE.md は symlink でなく cp なのか
 
-`~/.claude/CLAUDE.md` はプロジェクト横断のベース設定ファイルであり、
-Claude Code が読み取る。symlink にしても動作上は問題ないが、
-各プロジェクトの `CLAUDE.md` と異なる層のファイルであるため、
-現行の `cp` 方式を維持して明示的な管理とする。
-将来的に symlink に変更する場合は `install-claude.sh` 内の 1 行を
-変更するだけでよい。
+`~/.claude/CLAUDE.md` はプロジェクト横断のベース設定であり、現行の `cp` 方式を維持して明示的な管理とする。将来 symlink に変更する場合は `install-claude.sh` 内の 1 行変更で対応可能。
+
+---
+
+Generated with [Claude Code](https://claude.ai/code)
