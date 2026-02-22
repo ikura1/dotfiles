@@ -210,7 +210,7 @@ git_prompt_info() {
     if git rev-parse --git-dir > /dev/null 2>&1; then
         local branch=$(git branch 2>/dev/null | grep '^*' | colrm 1 2)
         local git_status=""
-        
+
         # Check for uncommitted changes
         if ! git diff --quiet 2>/dev/null; then
             git_status="%{$fg[red]%}✗%{$reset_color%}"
@@ -219,7 +219,7 @@ git_prompt_info() {
         else
             git_status="%{$fg[green]%}✓%{$reset_color%}"
         fi
-        
+
         echo " %{$fg[cyan]%}(%{$fg[yellow]%}$branch%{$fg[cyan]%}$git_status%{$fg[cyan]%})"
     fi
 }
@@ -324,5 +324,3 @@ fi
 if [ -f /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]; then
     source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 fi
-
-. "$HOME/.local/bin/env"
